@@ -1,3 +1,5 @@
+import sys
+
 def calculateCenter(startX, endX, startY, endY):
         centerX = int((startX + endX) / 2)
         centerY = int((startY + endY) / 2)
@@ -59,7 +61,6 @@ def showGrid(grid):
 
 def tileGrid(n): 
     size = 2**n
-
     if n==1:
         missingX = 1
         missingY = 0
@@ -68,11 +69,8 @@ def tileGrid(n):
         missingY = 3    
 
     grid = [['X' if i == missingY and j == missingX else '0' for i in range(size)] for j in range(size)]
-
     fill(n, grid, 0, size-1, 0, size-1, missingX, missingY)
     showGrid(grid)
 
-
-
-
-
+n = int(sys.argv[1])
+tileGrid(n)
