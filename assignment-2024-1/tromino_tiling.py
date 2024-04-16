@@ -8,7 +8,7 @@ def calculateCenter(startX, endX, startY, endY):
 def fill(n, grid, startX, endX, startY, endY, missingX, missingY):
 
     #GET CENTER OF THE CURRENT RECTANGLE AND SET THE MIDDLE COORDINATES
-    #ul : Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right
+    #ul= Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right
 
     cX, cY = calculateCenter(startX, endX, startY, endY)
 
@@ -20,18 +20,18 @@ def fill(n, grid, startX, endX, startY, endY, missingX, missingY):
     #CHECK IF THE MISSING TILE IS ON THE LEFT (OR OTHERWISE THE RIGHT) OF THE GRID
     #CHECK IF THE MISSING TILE IS ON THE UPPER (OR OTHERWISE THE LOWER) OF THE GRID
 
-    if missingX <= cX:  #aristera
-        if missingY <= cY: #aristera kai PANO
+    if missingX <= cX:  #LEFT
+        if missingY <= cY: #LEFT AND UPPER BOUND
             makeTromino(grid, cX, cY+1, cX+1, cY+1, cX+1, cY, n)
             ulX, ulY = missingX, missingY
-        else: #aristera kai KATO
+        else: #LEFT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX+1, cY+1, n)
             llX, llY = missingX, missingY
-    else: #deksia
-        if missingY <= cY: #deksia kai PANO
+    else: #RIGHT
+        if missingY <= cY: #RIGHT AND UPPER BOUND
             makeTromino(grid, cX, cY, cX, cY+1, cX+1, cY+1, n)            
             urX, urY = missingX, missingY
-        else: #deksia kai KATO
+        else: #RIGHT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX, cY+1, n)
             lrX, lrY = missingX, missingY
 
