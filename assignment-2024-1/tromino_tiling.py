@@ -5,13 +5,13 @@ def calculateCenter(startX, endX, startY, endY):
     centerY = int((startY + endY) / 2)
     return centerX, centerY
 
-def fill(n, grid, startX, endX, startY, endY, tromino_nums, missingX, missingY):
+def fill(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, missingX, missingY):
 
-    tromino_index = tromino_nums.pop(0)  #INDEX OF CURRENT TROMINO THAT WILL BE CREATED
-    tromino_nums.append(tromino_index)  #MOVES THE INDEX OF THIS TROMINO TO THE END SO THAT IT CAN NOT BE REUSED
+    tromino_index = tromino_nums.pop(0)  # INDEX OF CURRENT TROMINO THAT WILL BE CREATED
+    tromino_nums.append(tromino_index)  # MOVES THE INDEX OF THIS TROMINO TO THE END SO THAT IT CAN NOT BE REUSED
 
-    #GET CENTER OF THE CURRENT RECTANGLE AND SET THE MIDDLE COORDINATES
-    #ul= Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right
+    # GET CENTER OF THE CURRENT RECTANGLE AND SET THE MIDDLE COORDINATES
+    # ul= Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right
     
     cX, cY = calculateCenter(startX, endX, startY, endY)
 
@@ -20,36 +20,44 @@ def fill(n, grid, startX, endX, startY, endY, tromino_nums, missingX, missingY):
     llX, llY = cX, cY+1
     lrX, lrY = cX+1, cY+1
 
-    #CHECK IF THE MISSING TILE IS ON THE LEFT (OR OTHERWISE THE RIGHT) OF THE GRID
-    #CHECK IF THE MISSING TILE IS ON THE UPPER (OR OTHERWISE THE LOWER) OF THE GRID
+    # CHECK IF THE MISSING TILE IS ON THE LEFT (OR OTHERWISE THE RIGHT) OF THE GRID
+    # CHECK IF THE MISSING TILE IS ON THE UPPER (OR OTHERWISE THE LOWER) OF THE GRID
 
-    if missingX <= cX:  #LEFT
-        if missingY <= cY: #LEFT AND UPPER BOUND
+    if missingX <= cX:  # LEFT
+        if missingY <= cY: # LEFT AND UPPER BOUND
             makeTromino(grid, cX, cY+1, cX+1, cY+1, cX+1, cY, tromino_index)
+            tromino_positions.append([(cX, cY+1), (cX+1, cY+1), (cX+1, cY)])
+
             ulX, ulY = missingX, missingY
-        else: #LEFT AND LOWER BOUND
+        else: # LEFT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX+1, cY+1, tromino_index)
+            tromino_positions.append([(cX, cY), (cX+1, cY), (cX+1, cY+1)])
+
             llX, llY = missingX, missingY
-    else: #RIGHT
-        if missingY <= cY: #RIGHT AND UPPER BOUND
-            makeTromino(grid, cX, cY, cX, cY+1, cX+1, cY+1, tromino_index)            
+    else: # RIGHT
+        if missingY <= cY: # RIGHT AND UPPER BOUND
+            makeTromino(grid, cX, cY, cX, cY+1, cX+1, cY+1, tromino_index)  
+            tromino_positions.append([(cX, cY), (cX, cY+1), (cX+1, cY+1)])
+
             urX, urY = missingX, missingY
-        else: #RIGHT AND LOWER BOUND
+        else: # RIGHT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX, cY+1, tromino_index)
+            tromino_positions.append([(cX, cY), (cX+1, cY), (cX, cY+1)])
+
             lrX, lrY = missingX, missingY
 
     if n == 1:
         return 
     else:
-        fill(n-1, grid, startX, cX, startY, cY, tromino_nums, ulX, ulY) #RECURSION FOR UL
-        fill(n-1, grid, cX+1, endX, startY, cY, tromino_nums, urX, urY) #RECURSION FOR UR
-        fill(n-1, grid, startX, cX, cY+1, endY, tromino_nums, llX, llY) #RECURSION FOR LL
-        fill(n-1, grid, cX+1, endX, cY+1, endY, tromino_nums, lrX, lrY) #RECURSION FOR LR
+        fill(n-1, grid, startX, cX, startY, cY, tromino_nums, tromino_positions, ulX, ulY) # RECURSION FOR UL
+        fill(n-1, grid, cX+1, endX, startY, cY, tromino_nums, tromino_positions, urX, urY) # RECURSION FOR UR
+        fill(n-1, grid, startX, cX, cY+1, endY, tromino_nums, tromino_positions, llX, llY) # RECURSION FOR LL
+        fill(n-1, grid, cX+1, endX, cY+1, endY, tromino_nums, tromino_positions, lrX, lrY) # RECURSION FOR LR
 
 def placeTile(grid, x, y, n):
     grid[x][y] = n        
 
-#PLACES TILES AROUND THE MISSING TILE - THE HOLE
+# PLACES TILES AROUND THE MISSING TILE - THE HOLE
 def makeTromino(grid, x1, y1, x2, y2, x3, y3, n):
     placeTile(grid, x1, y1, n)
     placeTile(grid, x2, y2, n)
@@ -70,14 +78,16 @@ def tileGrid(n):
         missingX = 3
         missingY = 3   
 
-    #INITILIAZE GRID AND PLACE THE MISSING TILE / HOLE WITH AN 'X'
+    # INITILIAZE GRID AND PLACE THE MISSING TILE / HOLE WITH AN 'X'
     grid = [['X' if i == missingY and j == missingX else '0' for i in range(size)] for j in range(size)] 
 
-    #INITIALIZE THE LIST OF INDEXES FOR EACH TROMINO SO THAT IT CAN START COUNTING FROM 1
-    tromino_nums = list(range(1, (size * size) + 1))
+    # INITIALIZE THE LIST OF INDEXES FOR EACH TROMINO SO THAT IT CAN START COUNTING FROM 0
+    tromino_nums = list(range(size * size))
 
+    # INITILIAZE LIST TO STORE THE POSITIONS OF EACH TROMINO
+    tromino_positions = []  
 
-    fill(n, grid, 0, size-1, 0, size-1, tromino_nums, missingX, missingY)
+    fill(n, grid, 0, size-1, 0, size-1, tromino_nums, tromino_positions, missingX, missingY)
     showGrid(grid)
 
 n = int(sys.argv[1])
