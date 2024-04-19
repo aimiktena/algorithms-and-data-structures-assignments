@@ -4,15 +4,40 @@ def calculateCenter(startX, endX, startY, endY):
     centerX = int((startX + endX) / 2)
     centerY = int((startY + endY) / 2)
     return centerX, centerY
+ 
+# DEFINE THE 2 FOLLOWING FUNCTIONS IN ORDER TO CONVERT THE TILING PROBLEM TO A GRAPH COLORING PROBLEM (FOR THE COLORING OF THE TROMINOS)
+def are_adjacent(position1, position2):
+    x1, y1 = position1
+    x2, y2 = position2    
+    return abs(x1 - x2) <=1 and abs(y1 - y2) <=1
+
+def assign_neighbours(tromino_positions):
+    num_trominos = len(tromino_positions)
+    # INITIALIZE LIST OF LISTS FOR STORING THE NEIGHBOURS
+    neighbours = [[] for _ in range(num_trominos)]  
+
+    for i in range(num_trominos):
+        for j in range(i + 1, num_trominos):  
+            is_neighbour = False
+            for position1 in tromino_positions[i]:
+                for position2 in tromino_positions[j]:
+                    if are_adjacent(position1, position2):
+                        is_neighbour = True
+                        break 
+                if is_neighbour:
+                    break  
+            if is_neighbour:
+                neighbours[i].append(j)
+                neighbours[j].append(i)  
+
+    return neighbours
 
 def fill(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, missingX, missingY):
-
     tromino_index = tromino_nums.pop(0)  # INDEX OF CURRENT TROMINO THAT WILL BE CREATED
     tromino_nums.append(tromino_index)  # MOVES THE INDEX OF THIS TROMINO TO THE END SO THAT IT CAN NOT BE REUSED
 
     # GET CENTER OF THE CURRENT RECTANGLE AND SET THE MIDDLE COORDINATES
-    # ul= Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right
-    
+    # ul= Upper Left, ur= Upper Right, ll= Lower Left, lr= Lower Right    
     cX, cY = calculateCenter(startX, endX, startY, endY)
 
     ulX, ulY = cX, cY
@@ -27,23 +52,19 @@ def fill(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, m
         if missingY <= cY: # LEFT AND UPPER BOUND
             makeTromino(grid, cX, cY+1, cX+1, cY+1, cX+1, cY, tromino_index)
             tromino_positions.append([(cX, cY+1), (cX+1, cY+1), (cX+1, cY)])
-
             ulX, ulY = missingX, missingY
         else: # LEFT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX+1, cY+1, tromino_index)
             tromino_positions.append([(cX, cY), (cX+1, cY), (cX+1, cY+1)])
-
             llX, llY = missingX, missingY
     else: # RIGHT
         if missingY <= cY: # RIGHT AND UPPER BOUND
             makeTromino(grid, cX, cY, cX, cY+1, cX+1, cY+1, tromino_index)  
             tromino_positions.append([(cX, cY), (cX, cY+1), (cX+1, cY+1)])
-
             urX, urY = missingX, missingY
         else: # RIGHT AND LOWER BOUND
             makeTromino(grid, cX, cY, cX+1, cY, cX, cY+1, tromino_index)
             tromino_positions.append([(cX, cY), (cX+1, cY), (cX, cY+1)])
-
             lrX, lrY = missingX, missingY
 
     if n == 1:
@@ -80,15 +101,13 @@ def tileGrid(n):
 
     # INITILIAZE GRID AND PLACE THE MISSING TILE / HOLE WITH AN 'X'
     grid = [['X' if i == missingY and j == missingX else '0' for i in range(size)] for j in range(size)] 
-
     # INITIALIZE THE LIST OF INDEXES FOR EACH TROMINO SO THAT IT CAN START COUNTING FROM 0
     tromino_nums = list(range(size * size))
-
     # INITILIAZE LIST TO STORE THE POSITIONS OF EACH TROMINO
     tromino_positions = []  
 
     fill(n, grid, 0, size-1, 0, size-1, tromino_nums, tromino_positions, missingX, missingY)
     showGrid(grid)
-
+    
 n = int(sys.argv[1])
 tileGrid(n)
