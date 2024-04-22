@@ -22,14 +22,12 @@ def assign_neighbours(tromino_positions):
             for position1 in tromino_positions[i]:
                 for position2 in tromino_positions[j]:
                     if are_adjacent(position1, position2):
-                        is_neighbour = True
-                        break 
-                if is_neighbour:
-                    break  
-            if is_neighbour:
-                neighbours[i].append(j)
-                neighbours[j].append(i)  
-
+                        neighbours[i].append(j)
+                        neighbours[j].append(i)
+                        break
+                else:
+                    continue
+                break
     return neighbours
 
 def fill(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, missingX, missingY):
