@@ -9,7 +9,7 @@ def calculateCenter(startX, endX, startY, endY):
 def are_adjacent(position1, position2):
     x1, y1 = position1
     x2, y2 = position2    
-    return abs(x1 - x2) <=1 and abs(y1 - y2) <=1
+    return (abs(x1 - x2) == 1 and y1 == y2) or (abs(y1 - y2) == 1 and x1 == x2)
 
 def assign_neighbours(tromino_positions):
     num_trominos = len(tromino_positions)
