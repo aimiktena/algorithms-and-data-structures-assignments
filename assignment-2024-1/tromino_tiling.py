@@ -37,19 +37,15 @@ def assign_color(neighbours):
             green.add(i)
             for neighbor in neighbour_list:
                 green_restrictions.add(neighbor)
-
-    for i, neighbour_list in enumerate(neighbours):
-        if i not in green and i not in blue_restrictions:
+        elif i not in blue_restrictions:
             blue.add(i)
             for neighbor in neighbour_list:
                 blue_restrictions.add(neighbor)
-
-    for i, neighbour_list in enumerate(neighbours):
-        if i not in green and i not in blue and i not in red_restrictions:
+        else: 
             red.add(i)
             for neighbor in neighbour_list:
                 red_restrictions.add(neighbor)
-
+                
     return green, blue, red
 
 def fill_numbers(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, missingX, missingY):
