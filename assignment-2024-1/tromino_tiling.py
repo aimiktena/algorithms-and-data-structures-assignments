@@ -45,7 +45,7 @@ def assign_color(neighbours):
             red.add(i)
             for neighbor in neighbour_list:
                 red_restrictions.add(neighbor)
-                
+
     return green, blue, red
 
 def fill_numbers(n, grid, startX, endX, startY, endY, tromino_nums, tromino_positions, missingX, missingY):
@@ -99,13 +99,10 @@ def fill_colors(grid, tromino_positions, green, blue, red):
             elif tromino_positions.index(position_list) in red:
                 grid[x][y] = 'R'
 
-def placeTile(grid, x, y, n):
-    grid[x][y] = n        
-    
 def makeTromino(grid, x1, y1, x2, y2, x3, y3, n):
-    placeTile(grid, x1, y1, n)
-    placeTile(grid, x2, y2, n)
-    placeTile(grid, x3, y3, n)
+    grid[x1][y1] = n
+    grid[x2][y2] = n  
+    grid[x3][y3] = n
 
 def showGrid(grid):
     for j in range(len(grid)):
