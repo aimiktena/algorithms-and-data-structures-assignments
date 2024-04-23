@@ -29,13 +29,8 @@ def assign_neighbours(tromino_positions):
     return neighbours
 
 def assign_color(neighbours):
-    green= set()
-    blue= set()
-    red= set()
-
-    green_restrictions = set()
-    blue_restrictions = set()
-    red_restrictions = set()
+    green, blue, red = set(), set(), set()
+    green_restrictions, blue_restrictions, red_restrictions = set(), set(), set()
 
     for i, neighbour_list in enumerate(neighbours):
         if i not in green_restrictions:
