@@ -46,6 +46,28 @@ def burstsViterbi(X, k, lamdas, gamma):
         if costs[n][s] < cmin:
             cmin = costs[n][s]
             smin = s
-            
+
     S = paths[smin]
     return S, paths
+
+#Need to implement reading function to interprate the timestamps off the given file
+interval_periods = []
+for n in range(1, len(timestamps)):
+    interval_periods.append(timestamps[n] - timestamps[n-1])
+
+min_interval = min(interval_periods)
+
+n = len(timestamps) - 1
+T = timestamps[n] - timestamps[0]
+
+s = 2 # For now
+gamma = 1 # For now
+
+k = math.ceil(1 + (math.log(T) / math.log(s)) + (math.log(1 / min_interval) / math.log(s))) 
+g= T/n
+
+lamdas_per_state = []
+for i in range(k):
+    lamdas_per_state.append((s ** i) / g)
+
+state_in_each_timestamp, paths  = burstsViterbi(interval_periods, k, lamdas_per_state, gamma)
