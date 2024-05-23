@@ -1,4 +1,5 @@
 import math
+import argparse
 
 # i: current state, j: next state, gamma: penalty for moving up a state
 def calculateTransitionCost(i, j, gamma, n):
@@ -48,9 +49,20 @@ def burstsViterbi(X, k, lamdas, gamma):
             smin = s
 
     S = paths[smin]
-    return S, paths
+    return S, paths, costs
 
-#Need to implement reading function to interprate the timestamps off the given file
+parser = argparse.ArgumentParser()
+parser.add_argument('algorithm')
+parser.add_argument('file', type= str)
+parser.add_argument('-s', type= float, default=2)
+parser.add_argument('-g', '--gamma', type= float, default=1)
+parser.add_argument('-d', action='store_true')
+
+args = parser.parse_args()
+
+with open(args.file, 'r') as file:
+    timestamps = [float(timestamp) for timestamp in file.read().split()]
+
 interval_periods = []
 for n in range(1, len(timestamps)):
     interval_periods.append(timestamps[n] - timestamps[n-1])
@@ -60,8 +72,8 @@ min_interval = min(interval_periods)
 n = len(timestamps) - 1
 T = timestamps[n] - timestamps[0]
 
-s = 2 # For now
-gamma = 1 # For now
+s = args.s
+gamma = args.gamma
 
 k = math.ceil(1 + (math.log(T) / math.log(s)) + (math.log(1 / min_interval) / math.log(s))) 
 g= T/n
@@ -70,4 +82,21 @@ lamdas_per_state = []
 for i in range(k):
     lamdas_per_state.append((s ** i) / g)
 
-state_in_each_timestamp, paths  = burstsViterbi(interval_periods, k, lamdas_per_state, gamma)
+if args.algorithm == 'viterbi':
+    state_at_each_timestamp, paths, costs = burstsViterbi(interval_periods, k, lamdas_per_state, gamma)
+elif args.algorithm == 'trellis':
+    pass # For now
+
+# Starting time and state are standard
+current_s = state_at_each_timestamp[0]
+start_of_next_s = timestamps[0]
+
+for t in range(1, n+1):
+    if state_at_each_timestamp[t] != current_s:
+        end_of_this_s = timestamps[t - 1]
+        print(current_s, "[", start_of_next_s, timestamps[t - 1], ")")
+        current_s = state_at_each_timestamp[t]
+        start_of_next_s = timestamps[t - 1]
+
+end_time = timestamps[-1]
+print(current_s, "[", start_of_next_s, end_of_this_s, ")")
