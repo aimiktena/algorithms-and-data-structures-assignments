@@ -20,9 +20,7 @@ def exponential_distribution (x, lamda):
 def calculateExpectedValue(lamda):
     return 1/lamda
 
-def burstsViterbi(X, k, lamdas, gamma):
-    n = len(X)
-
+def burstsViterbi(n, X, k, lamdas, gamma):
     costs = [[0 if i == 0 and j == 0 else float('inf') for j in range(k)] for i in range(n + 1)]
     paths = [[0] * (n + 1) for _ in range(k)]
 
@@ -86,7 +84,7 @@ for i in range(k):
     lamdas_per_state.append((s ** i) / g)
 
 if args.algorithm == 'viterbi':
-    state_at_each_timestamp, paths, costs = burstsViterbi(interval_periods, k, lamdas_per_state, gamma)
+    state_at_each_timestamp, paths, costs = burstsViterbi(n, interval_periods, k, lamdas_per_state, gamma)
 elif args.algorithm == 'trellis':
     pass # For now
 
