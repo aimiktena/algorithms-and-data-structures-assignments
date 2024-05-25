@@ -20,6 +20,28 @@ def exponential_distribution (x, lamda):
 def calculateExpectedValue(lamda):
     return 1/lamda
 
+def createGraph(n, timestamps, k, lamdas, gamma):
+    states_listed = range(k)
+    nodes = [(t, state) for state in states_listed for t in range(len(timestamps))]
+    edges = {node: [] for node in nodes}
+
+    for t in range(1, len(timestamps)):
+        for i in states_listed: #i: current state
+            current_node = (t - 1, i)
+            for j in states_listed: #j: next state
+                next_node = (t, j)
+                interval_period = timestamps[t] - timestamps[t - 1]
+                transition_cost = calculateTransitionCost(i, j, gamma, n)
+                message_cost = calculateMessageCost(interval_period, lamdas[j])
+                total_cost = transition_cost + message_cost
+                edges[current_node].append((next_node, total_cost, transition_cost, message_cost))
+
+    #Remove the incorrect edges for the initial state nodes at t0, keeping only the edges regarding node (t0,q0)
+    for state in range(1, k):
+        edges[(0, state)] = []
+
+    return edges, nodes
+
 def burstsViterbi(n, X, k, lamdas, gamma):
     costs = [[0 if i == 0 and j == 0 else float('inf') for j in range(k)] for i in range(n + 1)]
     paths = [[0] * (n + 1) for _ in range(k)]
@@ -82,6 +104,8 @@ g= T/n
 lamdas_per_state = []
 for i in range(k):
     lamdas_per_state.append((s ** i) / g)
+
+graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
 
 if args.algorithm == 'viterbi':
     state_at_each_timestamp, paths, costs = burstsViterbi(n, interval_periods, k, lamdas_per_state, gamma)
