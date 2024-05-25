@@ -8,6 +8,9 @@ def calculateTransitionCost(i, j, gamma, n):
     else: 
         return gamma * (j-i) * math.log(n)
 
+def calculateMessageCost(diff, lamda):
+    return -math.log(exponential_distribution(diff, lamda))
+
 def exponential_distribution (x, lamda): 
     if x>=0:
         return lamda * math.exp(-lamda * x)
