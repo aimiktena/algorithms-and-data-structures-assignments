@@ -105,28 +105,27 @@ lamdas_per_state = []
 for i in range(k):
     lamdas_per_state.append((s ** i) / g)
 
-graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
-
 if args.algorithm == 'viterbi':
     state_at_each_timestamp, paths, costs = burstsViterbi(n, interval_periods, k, lamdas_per_state, gamma)
+    
+    if args.d:
+        for row in costs:
+            print([round(cost, 2) for cost in row])
+        print(len(timestamps), state_at_each_timestamp)
+
+    # Starting time and state are standard
+    current_s = state_at_each_timestamp[0]
+    start_of_next_s = timestamps[0]
+
+    for t in range(1, n+1):
+        if state_at_each_timestamp[t] != current_s:
+            end_of_this_s = timestamps[t - 1]
+            print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
+            current_s = state_at_each_timestamp[t]
+            start_of_next_s = timestamps[t - 1]
+
+    end_of_this_s = timestamps[-1]
+    print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
+
 elif args.algorithm == 'trellis':
-    pass # For now
-
-if args.d:
-    for row in costs:
-        print([round(cost, 2) for cost in row])
-    print(len(timestamps), state_at_each_timestamp)
-
-# Starting time and state are standard
-current_s = state_at_each_timestamp[0]
-start_of_next_s = timestamps[0]
-
-for t in range(1, n+1):
-    if state_at_each_timestamp[t] != current_s:
-        end_of_this_s = timestamps[t - 1]
-        print(current_s, "[", start_of_next_s, end_of_this_s, ")")
-        current_s = state_at_each_timestamp[t]
-        start_of_next_s = timestamps[t - 1]
-
-end_of_this_s = timestamps[-1]
-print(current_s, "[", start_of_next_s, end_of_this_s, ")")
+    graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
