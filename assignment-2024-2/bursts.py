@@ -3,7 +3,6 @@ import argparse
 
 MAX_FLOAT = float('inf')
 
-# i: current state, j: next state, gamma: penalty for moving up a state
 def calculateTransitionCost(i, j, gamma, n):
     if j<=i:
         return 0
@@ -18,13 +17,7 @@ def calculateMessageCost(diff, lamda):
         return MAX_FLOAT
 
 def exponential_distribution (x, lamda): 
-    if x>=0:
-        return lamda * math.exp(-lamda * x)
-    else:
-        return 0
-
-def calculateExpectedValue(lamda):
-    return 1/lamda
+    return lamda * math.exp(-lamda * x)
 
 def createGraph(n, timestamps, k, lamdas, gamma):
     states_listed = range(k)
