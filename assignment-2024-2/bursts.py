@@ -11,7 +11,11 @@ def calculateTransitionCost(i, j, gamma, n):
         return gamma * (j-i) * math.log(n)
 
 def calculateMessageCost(diff, lamda):
-    return -math.log(exponential_distribution(diff, lamda))
+    expdist_value = exponential_distribution(diff, lamda)
+    if expdist_value > 0:
+        return -math.log(expdist_value)
+    else:
+        return MAX_FLOAT
 
 def exponential_distribution (x, lamda): 
     if x>=0:
@@ -79,10 +83,9 @@ def burstsViterbi(n, X, k, lamdas, gamma):
                     lmin = l
             expdist_value = exponential_distribution(X[t - 1], lamdas[s])
             if expdist_value > 0:
-                second_value = math.log(expdist_value) 
+                costs[t][s] = cmin - math.log(expdist_value)  
             else:
-                second_value =  second_value = float('-inf')
-            costs[t][s] = cmin - second_value
+                costs[t][s] = cmin - float('-inf')
             paths[s][0:t] = paths[lmin][0:t]
             paths[s][t] = s
 
@@ -153,7 +156,7 @@ elif args.algorithm == 'trellis':
     graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
     starting_node = (nodes[0])  #First node refers to (t0,q0)
     distances, paths, relaxations = bellmanford(graph, starting_node)
-    
+
     #Find the end node with the minimum distance to find the path of nodes for the shortest path
     end_node = None
     min_distance = MAX_FLOAT
