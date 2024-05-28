@@ -1,6 +1,8 @@
 import math
 import argparse
 
+MAX_FLOAT = float('inf')
+
 # i: current state, j: next state, gamma: penalty for moving up a state
 def calculateTransitionCost(i, j, gamma, n):
     if j<=i:
@@ -41,6 +43,26 @@ def createGraph(n, timestamps, k, lamdas, gamma):
         edges[(0, state)] = []
 
     return edges, nodes
+
+def bellmanford(graph, s):
+    nodes = graph.keys()
+    num_nodes = len(nodes)
+
+    dist = {node: MAX_FLOAT for node in nodes}
+    dist[s] = 0
+
+    paths = {node: [s] for node in nodes} # Instead of just storing the predecessor, we want to store the full path
+    relaxations =[]
+
+    for i in range(num_nodes - 1):
+        for u in nodes:
+            for v, total_weight, transition_cost, message_cost in graph[u]:
+                if dist[u] != MAX_FLOAT and dist[v] > dist[u] + total_weight:
+                    relaxations.append((v, dist[v], dist[u] + total_weight, u, dist[u], transition_cost, message_cost))
+                    dist[v] = dist[u] + total_weight
+                    paths[v] = paths[u] + [v]
+
+    return dist, paths, relaxations
 
 def burstsViterbi(n, X, k, lamdas, gamma):
     costs = [[0 if i == 0 and j == 0 else float('inf') for j in range(k)] for i in range(n + 1)]
@@ -129,3 +151,15 @@ if args.algorithm == 'viterbi':
 
 elif args.algorithm == 'trellis':
     graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
+    starting_node = (nodes[0])  #First node refers to (t0,q0)
+    distances, paths, relaxations = bellmanford(graph, starting_node)
+    
+    #Find the end node with the minimum distance to find the path of nodes for the shortest path
+    end_node = None
+    min_distance = MAX_FLOAT
+    for state in range(k):
+        node = (n, state)
+        if distances[node] < min_distance:
+            min_distance = distances[node]
+            end_node = node
+    shortest_path = paths[end_node]
