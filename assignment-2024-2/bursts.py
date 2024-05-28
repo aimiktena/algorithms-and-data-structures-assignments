@@ -166,3 +166,20 @@ elif args.algorithm == 'trellis':
             min_distance = distances[node]
             end_node = node
     shortest_path = paths[end_node]
+
+    #Again, starting time and state are standard
+    current_s = shortest_path[0][1]
+    start_of_next_s = timestamps[shortest_path[0][0]]
+
+    for t in range(1, len(shortest_path)):
+        current_node = shortest_path[t]
+        next_state = current_node[1]
+
+        if next_state != current_s:
+            end_of_this_s = timestamps[current_node[0] - 1]
+            print(f"{current_s} [{start_of_next_s} {end_of_this_s})", sep="")
+            start_of_next_s = end_of_this_s
+            current_s = next_state
+
+    end_of_this_s = timestamps[-1]
+    print(f"{current_s} [{start_of_next_s} {end_of_this_s})", sep="")
