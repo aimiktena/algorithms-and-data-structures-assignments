@@ -167,6 +167,12 @@ elif args.algorithm == 'trellis':
             end_node = node
     shortest_path = paths[end_node]
 
+    if args.d:  
+        for relaxation in relaxations:
+            to_node, previous_distance, new_distance, from_node, cost_from_node, transition_cost, message_cost = relaxation
+            print(f"{to_node} {previous_distance:.2f} -> {new_distance:.2f} from {from_node} {cost_from_node:.2f} + {transition_cost:.2f} + {message_cost:.2f}")
+        print(len(timestamps), [node[1] for node in shortest_path])
+
     #Again, starting time and state are standard
     current_s = shortest_path[0][1]
     start_of_next_s = timestamps[shortest_path[0][0]]
