@@ -62,7 +62,7 @@ def bellmanford(graph, s):
     return dist, paths, relaxations
 
 def burstsViterbi(n, X, k, lamdas, gamma):
-    costs = [[0 if i == 0 and j == 0 else float('inf') for j in range(k)] for i in range(n + 1)]
+    costs = [[0 if i == 0 and j == 0 else MAX_FLOAT for j in range(k)] for i in range(n + 1)]
     paths = [[0] * (n + 1) for _ in range(k)]
 
     for t in range(1, n + 1):
@@ -98,7 +98,6 @@ parser.add_argument('file', type= str)
 parser.add_argument('-s', type= float, default=2)
 parser.add_argument('-g', '--gamma', type= float, default=1)
 parser.add_argument('-d', action='store_true')
-
 args = parser.parse_args()
 
 with open(args.file, 'r') as file:
@@ -109,13 +108,10 @@ for n in range(1, len(timestamps)):
     interval_periods.append(timestamps[n] - timestamps[n-1])
 
 min_interval = min(interval_periods)
-
 n = len(timestamps) - 1
 T = timestamps[n] - timestamps[0]
-
 s = args.s
 gamma = args.gamma
-
 k = math.ceil(1 + (math.log(T) / math.log(s)) + (math.log(1 / min_interval) / math.log(s))) 
 g= T/n
 
