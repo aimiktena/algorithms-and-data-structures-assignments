@@ -1,5 +1,6 @@
 import math
 import argparse
+from collections import deque
 
 MAX_FLOAT = float('inf')
 
@@ -43,21 +44,29 @@ def createGraph(n, timestamps, k, lamdas, gamma):
 
 def bellmanford(graph, s):
     nodes = graph.keys()
-    num_nodes = len(nodes)
-
     dist = {node: MAX_FLOAT for node in nodes}
     dist[s] = 0
-
     paths = {node: [s] for node in nodes} # Instead of just storing the predecessor, we want to store the full path
     relaxations =[]
 
-    for i in range(num_nodes - 1):
-        for u in nodes:
-            for v, total_weight, transition_cost, message_cost in graph[u]:
-                if dist[u] != MAX_FLOAT and dist[v] > dist[u] + total_weight:
-                    relaxations.append((v, dist[v], dist[u] + total_weight, u, dist[u], transition_cost, message_cost))
-                    dist[v] = dist[u] + total_weight
-                    paths[v] = paths[u] + [v]
+    q = deque()
+    in_queue = {node: False for node in nodes}
+    in_queue[s] = True
+    q.append(s)
+
+    while len(q) != 0:
+        u = q.popleft()
+        in_queue[u] = False
+
+        for v, total_weight, transition_cost, message_cost in graph[u]:
+            if dist[u] != MAX_FLOAT and dist[v] > dist[u] + total_weight:
+                relaxations.append((v, dist[v], dist[u] + total_weight, u, dist[u], transition_cost, message_cost))
+                dist[v] = dist[u] + total_weight
+                paths[v] = paths[u] + [v]  
+
+                if not in_queue[v]:
+                    q.append(v)
+                    in_queue[v] = True
 
     return dist, paths, relaxations
 
