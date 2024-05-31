@@ -99,7 +99,7 @@ def burstsViterbi(n, X, k, lamdas, gamma):
             smin = s
 
     S = paths[smin]
-    return S, paths, costs
+    return S, costs
 
 parser = argparse.ArgumentParser()
 parser.add_argument('algorithm')
@@ -129,7 +129,7 @@ for i in range(k):
     lamdas_per_state.append((s ** i) / g)
 
 if args.algorithm == 'viterbi':
-    state_at_each_timestamp, paths, costs = burstsViterbi(n, interval_periods, k, lamdas_per_state, gamma)
+    state_at_each_timestamp, costs = burstsViterbi(n, interval_periods, k, lamdas_per_state, gamma)
     
     if args.d:
         for row in costs:
