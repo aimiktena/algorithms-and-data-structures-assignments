@@ -101,6 +101,27 @@ def burstsViterbi(n, X, k, lamdas, gamma):
     S = paths[smin]
     return S, costs
 
+def conversion(tuples_list):
+    one_dimension_list = []
+    for node in tuples_list:
+        one_dimension_list.append(node[1])
+    return one_dimension_list
+
+def printResults(states, timestamps, n):
+    # Starting time and state are standard
+    current_s = states[0]
+    start_of_next_s = timestamps[0]
+
+    for t in range(1, n+1):
+        if states[t] != current_s:
+            end_of_this_s = timestamps[t - 1]
+            print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
+            current_s = states[t]
+            start_of_next_s = timestamps[t - 1]
+
+    end_of_this_s = timestamps[-1]
+    print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
+
 parser = argparse.ArgumentParser()
 parser.add_argument('algorithm')
 parser.add_argument('file', type= str)
@@ -135,20 +156,7 @@ if args.algorithm == 'viterbi':
         for row in costs:
             print([round(cost, 2) for cost in row])
         print(len(timestamps), state_at_each_timestamp)
-
-    # Starting time and state are standard
-    current_s = state_at_each_timestamp[0]
-    start_of_next_s = timestamps[0]
-
-    for t in range(1, n+1):
-        if state_at_each_timestamp[t] != current_s:
-            end_of_this_s = timestamps[t - 1]
-            print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
-            current_s = state_at_each_timestamp[t]
-            start_of_next_s = timestamps[t - 1]
-
-    end_of_this_s = timestamps[-1]
-    print(f"{current_s} [{start_of_next_s } {end_of_this_s})", sep="")
+    printResults(state_at_each_timestamp, timestamps, n)
 
 elif args.algorithm == 'trellis':
     graph, nodes = createGraph(n, timestamps, k, lamdas_per_state, gamma)
@@ -164,26 +172,11 @@ elif args.algorithm == 'trellis':
             min_distance = distances[node]
             end_node = node
     shortest_path = paths[end_node]
+    state_at_each_timestamp = conversion(shortest_path)
 
     if args.d:  
         for relaxation in relaxations:
             to_node, previous_distance, new_distance, from_node, cost_from_node, transition_cost, message_cost = relaxation
             print(f"{to_node} {previous_distance:.2f} -> {new_distance:.2f} from {from_node} {cost_from_node:.2f} + {transition_cost:.2f} + {message_cost:.2f}")
-        print(len(timestamps), [node[1] for node in shortest_path])
-
-    #Again, starting time and state are standard
-    current_s = shortest_path[0][1]
-    start_of_next_s = timestamps[shortest_path[0][0]]
-
-    for t in range(1, len(shortest_path)):
-        current_node = shortest_path[t]
-        next_state = current_node[1]
-
-        if next_state != current_s:
-            end_of_this_s = timestamps[current_node[0] - 1]
-            print(f"{current_s} [{start_of_next_s} {end_of_this_s})", sep="")
-            start_of_next_s = end_of_this_s
-            current_s = next_state
-
-    end_of_this_s = timestamps[-1]
-    print(f"{current_s} [{start_of_next_s} {end_of_this_s})", sep="")
+        print(len(timestamps), state_at_each_timestamp)
+    printResults(state_at_each_timestamp, timestamps, n)
