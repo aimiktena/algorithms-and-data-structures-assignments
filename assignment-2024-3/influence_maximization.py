@@ -17,3 +17,17 @@ with open(args.file, 'r') as file:
         if v not in graph:
             graph[v] = []
         graph[v].append(e)
+
+def max_degree_algorithm(graph, seeds):
+    selected = None
+    max_degree = -1
+    for node in graph:
+        if node not in seeds:
+            out_degree = len(graph[node])
+            if out_degree > max_degree:
+                selected = node
+                max_degree = out_degree
+            elif out_degree == max_degree and node < selected:
+                selected = node
+                max_degree = out_degree
+    return selected
