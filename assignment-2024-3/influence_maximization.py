@@ -16,6 +16,8 @@ with open(args.file, 'r') as file:
         v, e = int(v), int(e)
         if v not in graph:
             graph[v] = []
+        if e not in graph:
+            graph[e] = []
         graph[v].append(e)
 
 def max_degree_algorithm(graph, seeds):
@@ -31,3 +33,18 @@ def max_degree_algorithm(graph, seeds):
                 selected = node
                 max_degree = out_degree
     return selected
+
+def maximize_influence(graph, algorithm, p, k, mc, r):
+    seeds = []
+    influences = []
+    for _ in range(k):
+        if algorithm == "max_degree":
+            seed = max_degree_algorithm(graph, seeds)
+            seeds.append(seed)
+        elif algorithm == "greedy":
+            seed = greedy_algorithm(graph, seeds, p, mc, r)
+            seeds.append(seed)
+
+        influence = monte_carlo(graph, seeds, p, mc, r)
+        influences.append(influence)
+    return seeds, influences
