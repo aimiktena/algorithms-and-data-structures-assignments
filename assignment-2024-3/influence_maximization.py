@@ -7,7 +7,7 @@ parser.add_argument('k', type=int)
 parser.add_argument('algorithm')
 parser.add_argument('probability', type=float)
 parser.add_argument('mc', type=int)
-parser.add_argument('-r', type=int)
+parser.add_argument('-r', type=int, default=42) #ALTHOUGH ASSIGNMENT DOESN'T SPECIFY THE DEFAULT VALUE, I ADDED ONE BECAUSE FROM MY UNDERSTANDING THE USER COULD NOT GIVE A RANDOM SEED
 args = parser.parse_args()
 
 graph = {}
