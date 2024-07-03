@@ -89,3 +89,7 @@ def maximize_influence(graph, algorithm, p, k, mc):
     return seeds, influences
 
 random.seed(args.r)
+seeds, influences = maximize_influence(graph, args.algorithm, args.probability, args.k, args.mc)
+
+print("Seeds:", seeds)
+print("Influences:", influences)
