@@ -1,5 +1,6 @@
 import argparse
 import random
+from collections import deque
 
 parser = argparse.ArgumentParser()
 parser.add_argument('file', type=str)
@@ -21,15 +22,37 @@ with open(args.file, 'r') as file:
             graph[e] = []
         graph[v].append(e)
 
+def monte_carlo_ic_model(graph, seeds, p, mc):
+    final_influence = 0
+    for _ in range(mc): #PERFORM MULTIPLE TIMES BFS TO TRACK INFLUENCE
+        active = list(seeds) #INSTEAD OF "VISITED" LIST
+        processed = list()  # TO TRACK WHICH EDGES HAVE BEEN PROCESSED 
+        queue = deque(seeds)
+
+        while queue:
+            node = queue.pop()  
+            for neighbor in graph[node]:
+                edge = (node, neighbor)
+                if neighbor not in active and edge not in processed:
+                    processed.append(edge)
+                    if random.random() < p:
+                        active.append(neighbor)
+                        queue.appendleft(neighbor)
+
+        final_influence = final_influence + len(active)
+
+    average_influence = final_influence / mc
+    return average_influence
+
 def greedy_algorithm(graph, seeds, p, mc):
     selected = None
     max_influence = -1
-    currentset_influence = monte_carlo(graph, seeds, p, mc) #INFLUENCE FOR CURRENT SEEDS- NODES
+    currentset_influence = monte_carlo_ic_model(graph, seeds, p, mc) #INFLUENCE FOR CURRENT SEEDS- NODES
 
     for node in graph:
         if node not in seeds: # EXAMIN EACH NODE BELONGING TO V - SEEDS
             new_seeds = seeds + [node]
-            newset_influence = monte_carlo(graph, new_seeds, p, mc) #INFLUENCE FOR EXISTING SEEDS- NODES + POTENTIAL SEED- NODE
+            newset_influence = monte_carlo_ic_model(graph, new_seeds, p, mc) #INFLUENCE FOR EXISTING SEEDS- NODES + POTENTIAL SEED- NODE
             influence_increase = newset_influence - currentset_influence
             if influence_increase > max_influence:
                 max_influence = influence_increase
@@ -61,7 +84,7 @@ def maximize_influence(graph, algorithm, p, k, mc):
             seed = greedy_algorithm(graph, seeds, p, mc)
            
         seeds.append(seed)
-        influence = monte_carlo(graph, seeds, p, mc)
+        influence = monte_carlo_ic_model(graph, seeds, p, mc)
         influences.append(influence)
     return seeds, influences
 
