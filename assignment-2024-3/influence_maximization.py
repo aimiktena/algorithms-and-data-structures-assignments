@@ -21,6 +21,23 @@ with open(args.file, 'r') as file:
             graph[e] = []
         graph[v].append(e)
 
+def greedy_algorithm(graph, seeds, p, mc):
+    selected = None
+    max_influence = -1
+    currentset_influence = monte_carlo(graph, seeds, p, mc) #INFLUENCE FOR CURRENT SEEDS- NODES
+
+    for node in graph:
+        if node not in seeds: # EXAMIN EACH NODE BELONGING TO V - SEEDS
+            new_seeds = seeds + [node]
+            newset_influence = monte_carlo(graph, new_seeds, p, mc) #INFLUENCE FOR EXISTING SEEDS- NODES + POTENTIAL SEED- NODE
+            influence_increase = newset_influence - currentset_influence
+            if influence_increase > max_influence:
+                max_influence = influence_increase
+                selected = node
+            elif influence_increase == max_influence and node < selected:
+                selected = node
+    return selected
+
 def max_degree_algorithm(graph, seeds):
     selected = None
     max_degree = -1
