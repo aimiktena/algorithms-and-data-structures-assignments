@@ -1,4 +1,5 @@
 import argparse
+import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument('file', type=str)
@@ -31,20 +32,20 @@ def max_degree_algorithm(graph, seeds):
                 max_degree = out_degree
             elif out_degree == max_degree and node < selected:
                 selected = node
-                max_degree = out_degree
     return selected
 
-def maximize_influence(graph, algorithm, p, k, mc, r):
+def maximize_influence(graph, algorithm, p, k, mc):
     seeds = []
     influences = []
     for _ in range(k):
         if algorithm == "max_degree":
             seed = max_degree_algorithm(graph, seeds)
-            seeds.append(seed)
         elif algorithm == "greedy":
-            seed = greedy_algorithm(graph, seeds, p, mc, r)
-            seeds.append(seed)
-
-        influence = monte_carlo(graph, seeds, p, mc, r)
+            seed = greedy_algorithm(graph, seeds, p, mc)
+           
+        seeds.append(seed)
+        influence = monte_carlo(graph, seeds, p, mc)
         influences.append(influence)
     return seeds, influences
+
+random.seed(args.r)
