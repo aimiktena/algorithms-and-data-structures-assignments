@@ -25,8 +25,8 @@ with open(args.file, 'r') as file:
 def monte_carlo_ic_model(graph, seeds, p, mc):
     final_influence = 0
     for _ in range(mc): #PERFORM MULTIPLE TIMES BFS TO TRACK INFLUENCE
-        active = list(seeds) #INSTEAD OF "VISITED" LIST
-        processed = list()  # TO TRACK WHICH EDGES HAVE BEEN PROCESSED 
+        active = set(seeds) #INSTEAD OF "VISITED" LIST
+        processed = set()  # TO TRACK WHICH EDGES HAVE BEEN PROCESSED 
         queue = deque(seeds)
 
         while queue:
@@ -34,9 +34,9 @@ def monte_carlo_ic_model(graph, seeds, p, mc):
             for neighbor in graph[node]:
                 edge = (node, neighbor)
                 if neighbor not in active and edge not in processed:
-                    processed.append(edge)
+                    processed.add(edge)
                     if random.random() < p:
-                        active.append(neighbor)
+                        active.add(neighbor)
                         queue.appendleft(neighbor)
 
         final_influence = final_influence + len(active)
