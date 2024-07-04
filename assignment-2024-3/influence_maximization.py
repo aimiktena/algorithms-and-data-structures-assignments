@@ -27,7 +27,9 @@ def monte_carlo_ic_model(graph, seeds, p, mc):
     for _ in range(mc): #PERFORM MULTIPLE TIMES BFS TO TRACK INFLUENCE
         active = set(seeds) #INSTEAD OF "VISITED" LIST
         processed = set()  # TO TRACK WHICH EDGES HAVE BEEN PROCESSED 
-        queue = deque(seeds)
+        queue = deque() 
+        for seed in active:
+            queue.appendleft(seed)
 
         while queue:
             node = queue.pop()  
